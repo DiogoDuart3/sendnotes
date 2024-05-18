@@ -42,7 +42,7 @@ new class extends Component {
         <x-input wire:model="noteRecipient" label="Recipient" type="email" placeholder="email@example.com" />
         <x-input wire:model="noteSendDate" label="Send Date" type="date" />
         <div class="pt-4">
-            <x-button wire:click="submit" primary right-icon="calendar" spinner>Submit</x-button>
+            <x-button type="submit" primary right-icon="calendar" spinner="submit">Submit</x-button>
         </div>
         <x-errors />
     </form>

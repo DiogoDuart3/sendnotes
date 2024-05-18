@@ -21,7 +21,7 @@ Route::view('notes/create', 'notes.create')
     ->middleware(['auth'])
     ->name('notes.create');
 
-Volt::route('notes/{noteId}/edit', 'notes.edit-note')
+Volt::route('notes/{note}/edit', 'notes.edit-note')
     ->middleware(['auth'])
     ->name('notes.edit');
 

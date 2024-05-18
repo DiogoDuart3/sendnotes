@@ -7,13 +7,24 @@ use App\Models\Note;
 new #[Layout('layouts.app')] class extends Component {
     public Note $note;
 
+    public $noteTitle;
+    public $noteBody;
+    public $noteRecipient;
+    public $noteSendDate;
+    public $noteIsPublished;
+
     public function mount(Note $note)
     {
-        $this->fill($note);
         $this->authorize('update', $note);
+        $this->fill($note);
+        $this->noteTitle = $note->title;
+        $this->noteBody = $note->body;
+        $this->noteRecipient = $note->recipient;
+        $this->noteSendDate = $note->send_date;
+        $this->noteIsPublished = $note->is_published;
     }
 
-    public function submit()
+    public function saveNote()
     {
         $validated = $this->validate([
             'noteTitle' => ['required', 'string', 'min:5', 'max:255'],
@@ -22,33 +33,39 @@ new #[Layout('layouts.app')] class extends Component {
             'noteSendDate' => ['required', 'date'],
         ]);
 
-        auth()
-            ->user()
-            ->notes()
-            ->create([
-                'title' => $validated['noteTitle'],
-                'body' => $validated['noteBody'],
-                'recipient' => $validated['noteRecipient'],
-                'send_date' => $validated['noteSendDate'],
-                'is_published' => true,
-            ]);
+        $this->note->update([
+            'title' => $this->noteTitle,
+            'body' => $this->noteBody,
+            'recipient' => $this->noteRecipient,
+            'send_date' => $this->noteSendDate,
+            'is_published' => $this->noteIsPublished,
+        ]);
 
-        redirect(route('notes.index'));
+        $this->dispatch('note-saved');
     }
 }; ?>
 
-<div>
-    <div>
-        <x-button icon="arrow-left" href="{{ route('notes.index') }}">All notes</x-button>
+<x-slot name="header">
+    <h2 class="text-xl font-semibold leading-tight text-gray-800">
+        {{ __('Edit Note') }}
+    </h2>
+</x-slot>
+
+
+<div class="py-12">
+    <div class="max-w-2xl mx-auto space-y-4 sm:px-6 lg:px-8">
+        <form wire:submit='saveNote' class="mt-6 space-y-4">
+            <x-input wire:model="noteTitle" label="Note Title" placeholder="It's been a great day." />
+            <x-textarea wire:model="noteBody" label="Your Note" placeholder="Share all your toughts with your friend." />
+            <x-input wire:model="noteRecipient" label="Recipient" type="email" placeholder="email@example.com" />
+            <x-input wire:model="noteSendDate" label="Send Date" type="date" />
+            <x-checkbox label="Note Published" wire:model='noteIsPublished' />
+            <div class="flex justify-between pt-4">
+                <x-button type="submit" secondary right-icon="calendar" spinner="saveNote">Submit</x-button>
+                <x-button href="{{ route('notes.index') }}" flat negative>Back to Notes</x-button>
+            </div>
+            <x-action-message on="note-saved">Saved.</x-action-message>
+            <x-errors />
+        </form>
     </div>
-    <form wire:submit='submit' class="mt-6 space-y-4">
-        <x-input wire:model="noteTitle" label="Note Title" placeholder="It's been a great day." />
-        <x-textarea wire:model="noteBody" label="Your Note" placeholder="Share all your toughts with your friend." />
-        <x-input wire:model="noteRecipient" label="Recipient" type="email" placeholder="email@example.com" />
-        <x-input wire:model="noteSendDate" label="Send Date" type="date" />
-        <div class="pt-4">
-            <x-button wire:click="submit" primary right-icon="calendar" spinner>Submit</x-button>
-        </div>
-        <x-errors />
-    </form>
 </div>
