@@ -5,24 +5,23 @@ use App\Models\Note;
 
 new class extends Component {
     public Note $note;
-    public $heartCount;
 
-    protected $listeners = ['echo:my-name,NoteGivenHeart' => 'notifyNewOrder'];
+    protected $listeners = ['echo:my-name,NoteGivenHeart' => 'handleNoteChange'];
 
     public function mount(Note $note)
     {
         $this->note = $note;
     }
 
-    public function heart(): void
+    public function heart()
     {
         $this->note->increment('heart_count');
         event(new \App\Events\NoteGivenHeart($this->note));
     }
 
-    public function handleNoteChange(Note $note): void
+    public function handleNoteChange($data)
     {
-        $this->note = $note->heart_count;
+        $this->note->heart_count = $data['note']['heart_count'];
     }
 }; ?>
 

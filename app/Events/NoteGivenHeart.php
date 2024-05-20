@@ -16,7 +16,7 @@ class NoteGivenHeart implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public string $note;
+    public Note $note;
 
     /**
      * Create a new event instance.
