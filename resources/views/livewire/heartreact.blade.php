@@ -28,4 +28,11 @@ new class extends Component {
 
 <div>
     <x-button xs wire:click='heart' rose icon="heart" spinner="heart">{{ $note->heart_count }}</x-button>
+    <div x-data="{ open: false }" @mouseleave="open = false">
+        <button @mouseenter="open = true">Show More...</button>
+        <ul x-show="open">
+            <li><button wire:click="archive">Archive</button></li>
+            <li><button wire:click="delete">Delete</button></li>
+        </ul>
+    </div>
 </div>
